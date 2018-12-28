@@ -12,6 +12,7 @@
     */
 
 
+import Util.EmailValidator;
     import Util.JsfUtil;
     import Util.Session;
     import java.io.IOException;
@@ -38,6 +39,8 @@
     //store shops & liked shops before logout 
     @Inject
     private ShopController shop;
+    //validate email
+        EmailValidator ev=new EmailValidator();
 
 
     public User getAdded() {
@@ -78,7 +81,9 @@
 
     //sign up process using email and password 
     public void signup() throws IOException
-    {  if(getUsers().size()==0)
+    {  
+        if(ev.validateEmail(getAdded().getEmail()))
+        {if(getUsers().size()==0)
     {getUsers().add(getAdded());
     setAdded(null);
     redirect("signin");
@@ -90,7 +95,9 @@
     redirect("signin");
     }
     }
-    jsf.addErrorMessage("Sign up failed ,Email already exist ");
+    jsf.addErrorMessage("Sign up failed ,Email already exist ");}
+        else
+            jsf.addErrorMessage("Email invalid");
 
     }
     //PREPARE TO CRATE TO OPTIMISE CREATED OBJECTS
@@ -100,6 +107,7 @@
     }
     //LOGIN USING EMAL AND PASSWORD
     public void login() throws IOException {
+        if(ev.validateEmail((getUser().getEmail()) )){
     for(User a_user:users)
     if (a_user.getEmail().equalsIgnoreCase(getUser().getEmail()) && a_user.getPassword().equalsIgnoreCase(getUser().getPassword())) 
     {   session.setAttribut(getUser(),getUser().getEmail());
@@ -108,7 +116,9 @@
     redirect("main");
     break;
     }  
-    jsf.addErrorMessage("Sign in failed , please check your login & password ");
+    jsf.addErrorMessage("Sign in failed , please check your login & password ");}
+        else
+             jsf.addErrorMessage("Email invalide ");
 
     }
     //user logout
